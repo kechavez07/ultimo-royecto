@@ -7,7 +7,13 @@ import java.util.ArrayList;
 import java.util.*;
 
 public class PlatoDAO {
-            public ArrayList obtenerPlato(){
+    public void insertar(){
+        Conexion objCon= new Conexion();
+        DBCursor cursor= objCon.coleccionPlato.find();
+        
+        
+    }
+    public ArrayList obtenerPlato(){
         ArrayList<Plato> listaPlato= new ArrayList<Plato>();
         Plato aux1;
         Conexion objCon= new Conexion();

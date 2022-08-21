@@ -1,6 +1,5 @@
-//Este sirve 24/07/2022
-//21:55
-
+//Ptrones 
+//21/08/2022    4:47
 package controlador;
 
 import vista.FrmConfirmacion;
