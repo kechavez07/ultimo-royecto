@@ -8,7 +8,7 @@ package vista;
 import javax.swing.DefaultListModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import modelo.Pedido;
+import modelo.FabricaPedido;
 
 /**
  *
@@ -366,7 +366,7 @@ public class FrmBebidas extends javax.swing.JFrame {
 //    FrmConfirmacion confirmacion= new FrmConfirmacion();
 //       
 //        if(rbCoca.isSelected()){
-//            Pedido ped1= new Pedido("Coca cola",txtCoca.getText());
+//            FabricaPedido ped1= new FabricaPedido("Coca cola",txtCoca.getText());
 ////            tablaD.setModel(modeloT);
 //            
 ////            int cantidad1;

@@ -11,7 +11,7 @@ import static java.lang.String.valueOf;
 import java.util.ArrayList;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import modelo.Pedido;
+import modelo.PedidoBebidas;
 import modelo.PedidosDAO;
 import vista.FrmBebidas;
 import vista.FrmEntradas;
@@ -21,6 +21,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import modelo.Cliente;
 import modelo.ClienteDAO;
+import modelo.FabricaPedido;
+import modelo.PedidosEntradas;
+import modelo.PedidosFuertes;
+import modelo.PedidosPostres;
 import modelo.Plato;
 import modelo.PlatoDAO;
 import modelo.Usuario;
@@ -36,8 +40,7 @@ import vista.FrmVisualisarInformacionPedido;
 import vista.FrmhistorialOrdenes;
 
 public class ControladorRestaurante implements ActionListener, KeyListener  {
-    Pedido ped= new Pedido();
-    PedidosDAO pedDAO;
+    PedidosDAO pedDAO; 
     FrmBebidas objetoVistaBebidas;
     FrmEntradas objetoVistaEntradas;
     FrmFuerte objetoVistaFuerte;
@@ -59,6 +62,10 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
     Cliente  cliente1;
     ClienteDAO clienteDAO;
     Cliente objetoCliente= new Cliente(); 
+    FabricaPedido pedBeb= new PedidoBebidas();
+    FabricaPedido pedEntradas= new PedidosEntradas();
+    FabricaPedido pedFuertes= new PedidosEntradas();
+    FabricaPedido pedPostres= new PedidosPostres();
 //inicializamos 
     public ControladorRestaurante(
             FrmEscogeTuSabor vista, 
@@ -214,10 +221,17 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
         Object[] columna = new Object[3];
         int numReg= pedDAO.obtenerPedidos().size();
         for( int i=0; i<numReg;i++){
-            ped =(Pedido)pedDAO.obtenerPedidos().get(i);
-            columna[0]= ped.getNombrePedido();
-            columna[1]= ped.getCantidad();
-            columna[2]= ped.getPrecio();
+            pedBeb =(PedidoBebidas)pedDAO.obtenerPedidos().get(i);
+            columna[0]= pedBeb.getNombrePedido();
+            columna[1]= pedBeb.getCantidad();
+            columna[2]= pedBeb.getPrecio();
+            modeloT.addRow(columna);      
+        }
+        for( int i=0; i<numReg;i++){
+            pedEntradas =(PedidosEntradas)pedDAO.obtenerPedidos().get(i);
+            columna[0]= pedEntradas .getNombrePedido();
+            columna[1]= pedEntradas .getCantidad();
+            columna[2]= pedEntradas .getPrecio();
             modeloT.addRow(columna);      
         }
     }
@@ -439,12 +453,21 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
             Object [] columna= new Object[4];
             int numReg= pedDAO.buscarPedido(pedido).size();
             for(int i=0;i<numReg;i++){
-                ped= (Pedido) pedDAO.buscarPedido(pedido).get(i);
-                System.out.println(ped);
-                columna[0]=ped.getNombrePedido();
-                columna[1]=ped.getCantidad();
-                columna[2]= ped.getPrecio();
-                columna[3]= ped.getTotal();
+                pedBeb= (PedidoBebidas) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedBeb);
+                columna[0]=pedBeb.getNombrePedido();
+                columna[1]=pedBeb.getCantidad();
+                columna[2]= pedBeb.getPrecio();
+                columna[3]= pedBeb.getTotal();
+                modeloT.addRow(columna);
+            }
+            for(int i=0;i<numReg;i++){
+                pedEntradas = (PedidosEntradas) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedEntradas);
+                columna[0]=pedEntradas .getNombrePedido();
+                columna[1]=pedEntradas .getCantidad();
+                columna[2]= pedEntradas .getPrecio();
+                columna[3]= pedEntradas .getTotal();
                 modeloT.addRow(columna);
             }
             objetoVistaConfirmacion.txtBuscarPedidoconfirmacion.setEditable(false);
@@ -462,12 +485,21 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
             Object [] columna= new Object[4];
             int numReg= pedDAO.buscarPedido(pedido).size();
             for(int i=0;i<numReg;i++){
-                ped= (Pedido) pedDAO.buscarPedido(pedido).get(i);
-                System.out.println(ped);
-                columna[0]=ped.getNombrePedido();
-                columna[1]=ped.getCantidad();
-                columna[2]= ped.getPrecio();
-                columna[3]= ped.getTotal();
+                pedBeb= (PedidoBebidas) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedBeb);
+                columna[0]=pedBeb.getNombrePedido();
+                columna[1]=pedBeb.getCantidad();
+                columna[2]= pedBeb.getPrecio();
+                columna[3]= pedBeb.getTotal();
+                modeloT.addRow(columna);
+            }
+            for(int i=0;i<numReg;i++){
+                pedEntradas = (PedidosEntradas) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedEntradas );
+                columna[0]=pedEntradas .getNombrePedido();
+                columna[1]=pedEntradas .getCantidad();
+                columna[2]= pedEntradas .getPrecio();
+                columna[3]= pedEntradas .getTotal();
                 modeloT.addRow(columna);
             }
             objetoVistaConfirmacion.txtBuscarPedidoconfirmacion.setEditable(false);
@@ -499,31 +531,38 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
         }
             
         if(e.getSource()==objetoVistaBebidas.btnAgregarBebidas){
-            
+           float total=0f;
             String numPedido=objetoVistaBebidas.txtPedidoBebidas.getText();
             if(objetoVistaBebidas.rbCoca.getLabel().equalsIgnoreCase("Coca cola")){
+         
                 String nombrePed=objetoVistaBebidas.rbCoca.getLabel();
                 String cantidad= objetoVistaBebidas.txtCoca.getText();
                 String precio= objetoVistaBebidas.jlCoca.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaBebidas.jlCoca.getText());
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidoBebidas(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaBebidas.jlCoca.getText()))));                
+
                 pedDAO.insertarPedidos(objPed);
             }
             if(objetoVistaBebidas.rbFanta.getLabel().equalsIgnoreCase("Fanta")){
+
                 String nombrePed=objetoVistaBebidas.rbFanta.getLabel();
                 String cantidad= objetoVistaBebidas.txtFanta.getText();
                 String precio= objetoVistaBebidas.jlFanta.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaBebidas.jlFanta.getText());
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidoBebidas(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaBebidas.jlFanta.getText()))));  
+
                 pedDAO.insertarPedidos(objPed);
             }
             if(objetoVistaBebidas.rbSprite.getLabel().equalsIgnoreCase("Sprite")){
+                
                 String nombrePed=objetoVistaBebidas.rbSprite.getLabel();
                 String cantidad= objetoVistaBebidas.txtSprite.getText();
                 String precio=objetoVistaBebidas.jlSprite.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaBebidas.jlSprite.getText());
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
-                
+                FabricaPedido objPed= new PedidoBebidas(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaBebidas.jlSprite.getText()))));  
                 pedDAO.insertarPedidos(objPed);
             }
             
@@ -539,33 +578,37 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
             objetoVistaBebidas.setVisible(false);
             menu.setVisible(true);
         }
-        
+        //----------
         if(e.getSource()==objetoVistaPostre.btnAgregarPostre){
+            float total=0f;
             String numPedido=objetoVistaPostre.txtPedidoPostre.getText();
 
             if(objetoVistaPostre.rbDulceGuayaba.getLabel().equalsIgnoreCase("Dulce de Guayaba")){
                 String nombrePed=objetoVistaPostre.rbDulceGuayaba.getLabel();
                 String cantidad= objetoVistaPostre.txtCantidadDGuayaba.getText();
                 String precio=objetoVistaPostre.jlPrecioGuayaba.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(precio);
-               Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidosPostres(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaPostre.jlPrecioGuayaba.getText()))));  
                  pedDAO.insertarPedidos(objPed);
             }
             if(objetoVistaPostre.rbEspumillaNaranjilla.getLabel().equalsIgnoreCase("Espumilla de Naranjilla")){
                 String nombrePed=objetoVistaPostre.rbEspumillaNaranjilla.getLabel();
                 String cantidad= objetoVistaPostre.txtCatidadEspumilla.getText();
                 String precio=objetoVistaPostre.jlPrecioEspumilla.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(precio);
-               Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
-                pedDAO.insertarPedidos(objPed);
+                FabricaPedido objPed= new PedidosPostres(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaPostre.jlPrecioEspumilla.getText()))));  
+                 pedDAO.insertarPedidos(objPed);
             }
             if(objetoVistaPostre.rbCoco.getLabel().equalsIgnoreCase("Bien me sabe de Coco")){ 
                 String nombrePed=objetoVistaPostre.rbCoco.getLabel();
                 String cantidad= objetoVistaPostre.txtCantidadCoco.getText();
                 String precio=objetoVistaPostre.jlPrecioBienCoco.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(precio);
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
-                 pedDAO.insertarPedidos(objPed);
+                FabricaPedido objPed= new PedidosPostres(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaPostre.jlPrecioBienCoco.getText()))));  
+                pedDAO.insertarPedidos(objPed);
             }
         }
         if(e.getSource()==objetoVistaPostre.btnRegresar){
@@ -579,29 +622,34 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
             menu.setVisible(true);
         }
         if(e.getSource()==objetoVistaFuerte.btnAgregarFuerte){
+            float total=0f;            
             String numPedido=objetoVistaFuerte.txtPedidoFuertes.getText();
             if(objetoVistaFuerte.rbArroz.getLabel().equalsIgnoreCase("Arroz con Conchas")){ 
                 String nombrePed=objetoVistaFuerte.rbArroz.getLabel();
                 String cantidad= objetoVistaFuerte.txtCantidadArroz.getText();
                 String precio=objetoVistaFuerte.jlArrosPrecio.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaFuerte.jlArrosPrecio.getText());
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidosFuertes(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaFuerte.jlArrosPrecio.getText()))));  
                 pedDAO.insertarPedidos(objPed);
+                
             }
             if(objetoVistaFuerte.rbChurrasco.getLabel().equalsIgnoreCase("Churrasco")){
                 String nombrePed=objetoVistaFuerte.rbChurrasco.getLabel();
                 String cantidad= objetoVistaFuerte.txtCantidadChurrasco.getText();
                 String precio=objetoVistaFuerte.jlChurrascoPrecio.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaFuerte.jlChurrascoPrecio.getText());
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidosFuertes(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaFuerte.jlChurrascoPrecio.getText()))));  
                 pedDAO.insertarPedidos(objPed);
             }
             if(objetoVistaFuerte.rbEncebollado.getLabel().equalsIgnoreCase("Encebollado")){
                 String nombrePed=objetoVistaFuerte.rbEncebollado.getLabel();
                 String cantidad= objetoVistaFuerte.txtCantidadEncebollado.getText();
                 String precio=objetoVistaFuerte.jlEncebollado.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaFuerte.jlEncebollado.getText());
-               Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidosFuertes(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaFuerte.jlEncebollado.getText()))));  
                 pedDAO.insertarPedidos(objPed);
             }
         }
@@ -615,30 +663,35 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
             objetoVistaFuerte.setVisible(false);
             menu.setVisible(true);
         }
+        ///----------------------------------------------------------
         if(e.getSource()==objetoVistaEntradas.btnAgregarEntrada){
+            float total=0f;
             String numPedido=objetoVistaEntradas.txtPedidoEntrada.getText();
             if(objetoVistaEntradas.rbBolonVerde.getLabel().equalsIgnoreCase("Bolon de Verde")){ 
                 String nombrePed=objetoVistaEntradas.rbBolonVerde.getLabel();
                 String cantidad= objetoVistaEntradas.txtCantidadBolon.getText();
                 String precio=objetoVistaEntradas.jlPrecioBolon.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaEntradas.jlPrecioBolon.getText());
-               Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
-                 pedDAO.insertarPedidos(objPed);
+                FabricaPedido objPed= new PedidosEntradas(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaEntradas.jlPrecioBolon.getText()))));                
+                pedDAO.insertarPedidos(objPed);
             }
             if(objetoVistaEntradas.rbEmpanadaMorocho.getLabel().equalsIgnoreCase("Empanadas de morocho")){
                 String nombrePed=objetoVistaEntradas.rbEmpanadaMorocho.getLabel();
                 String cantidad= objetoVistaEntradas.txtCantidadEmpanadasMorocho.getText();
                 String precio=objetoVistaEntradas.jlPrecioEmpanadas.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaEntradas.jlPrecioEmpanadas.getText());
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidosEntradas(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaEntradas.jlPrecioEmpanadas.getText()))));                
                 pedDAO.insertarPedidos(objPed);
             }
             if(objetoVistaEntradas.rbPanYuca.getLabel().equalsIgnoreCase("Pan de Yuca")){
                 String nombrePed=objetoVistaEntradas.rbPanYuca.getLabel();
                 String cantidad= objetoVistaEntradas.txtCantidadPan.getText();
                 String precio=objetoVistaEntradas.jlPanYuca.getText();
-                float total = Integer.parseInt(cantidad)*Float.parseFloat(objetoVistaEntradas.jlPanYuca.getText());
-                Pedido objPed= new Pedido(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                FabricaPedido objPed= new PedidosEntradas(numPedido,nombrePed, Integer.parseInt(cantidad),precio,valueOf(total));
+                objPed.getTotal();
+                objPed.setTotal(valueOf(objPed.calcularPrecio(Float.parseFloat(objetoVistaEntradas.jlPanYuca.getText()))));                
                 pedDAO.insertarPedidos(objPed);
             }
         }
@@ -690,13 +743,46 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
             Object [] columna= new Object[4];
             int numReg= pedDAO.buscarPedido(pedido).size();
             for(int i=0;i<numReg;i++){
-                ped= (Pedido) pedDAO.buscarPedido(pedido).get(i);
-                System.out.println(ped);
-                columna[0]=ped.getNombrePedido();
-                columna[1]=ped.getCantidad();
-                columna[2]= ped.getPrecio();
-                columna[3]= ped.getTotal();
-                total = total + Float.parseFloat(ped.getTotal());
+                pedBeb= (PedidoBebidas) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedBeb);
+                columna[0]=pedBeb.getNombrePedido();
+                columna[1]=pedBeb.getCantidad();
+                columna[2]= pedBeb.getPrecio();
+                columna[3]= pedBeb.getTotal();
+                total = total + Float.parseFloat(pedBeb.getTotal());
+                modeloT.addRow(columna);
+            }
+            for(int i=0;i<numReg;i++){
+                pedEntradas= (PedidosEntradas) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedEntradas);
+                columna[0]=pedEntradas.getNombrePedido();
+                columna[1]=pedEntradas.getCantidad();
+                columna[2]= pedEntradas.getPrecio();
+                columna[3]= pedEntradas.getTotal();
+                total = total + Float.parseFloat(pedEntradas.getTotal());
+                modeloT.addRow(columna);
+                
+            }
+
+            for(int i=0;i<numReg;i++){
+                pedFuertes= (PedidosFuertes) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedFuertes);
+                columna[0]=pedFuertes.getNombrePedido();
+                columna[1]=pedFuertes.getCantidad();
+                columna[2]= pedFuertes.getPrecio();
+                columna[3]= pedFuertes.getTotal();
+                total = total + Float.parseFloat(pedFuertes.getTotal());
+                modeloT.addRow(columna);
+                
+            }
+            for(int i=0;i<numReg;i++){
+                pedPostres= (PedidosFuertes) pedDAO.buscarPedido(pedido).get(i);
+                System.out.println(pedPostres);
+                columna[0]=pedPostres.getNombrePedido();
+                columna[1]=pedPostres.getCantidad();
+                columna[2]= pedPostres.getPrecio();
+                columna[3]= pedPostres.getTotal();
+                total = total + Float.parseFloat(pedPostres.getTotal());
                 modeloT.addRow(columna);
                 
             }
@@ -730,15 +816,24 @@ public class ControladorRestaurante implements ActionListener, KeyListener  {
         listPe = platodao.obtenerPlato();        
         Object[] columna = new Object[2];
             for(int i=0;i<numReg3;i++){
-                ped= (Pedido) pedDAO.buscarPedido(objetoVistaFactura.numeroPedido.getText()).get(i);
-                System.out.println(ped);
-              pla = platodao.buscarPlato(ped.nombrePedido);
+                pedBeb= (PedidoBebidas) pedDAO.buscarPedido(objetoVistaFactura.numeroPedido.getText()).get(i);
+                System.out.println(pedBeb);
+              pla = platodao.buscarPlato(pedBeb.nombrePedido);
                System.out.println("Lista buscada "+listPe.size());
                 System.out.println("pla= "+pla);
                  columna[0]=pla.getNombre();
                  columna[1]=pla.getIngredientes();             
                 modeloT.addRow(columna);     
-        
+            }
+            for(int i=0;i<numReg3;i++){
+                pedEntradas= (PedidosEntradas) pedDAO.buscarPedido(objetoVistaFactura.numeroPedido.getText()).get(i);
+                System.out.println(pedEntradas);
+              pla = platodao.buscarPlato(pedEntradas.nombrePedido);
+               System.out.println("Lista buscada "+listPe.size());
+                System.out.println("pla= "+pla);
+                 columna[0]=pla.getNombre();
+                 columna[1]=pla.getIngredientes();             
+                modeloT.addRow(columna);     
         }
     }
     if(e.getSource()==objetoVistaFactura.btnMenu){

@@ -1,14 +1,14 @@
 
 package modelo;
 
-public class Pedido {
+public abstract class FabricaPedido {
     public String numeroPedido;
     public String nombrePedido;// nombre del plato
     public int cantidad;
     public String precio1;
     public String total;
 
-    public Pedido(String numeroPedido, String nombrePedido, int cantidad,String precio1, String total) {
+    public FabricaPedido(String numeroPedido, String nombrePedido, int cantidad,String precio1, String total) {
         this.numeroPedido = numeroPedido;
         this.nombrePedido = nombrePedido;
         this.cantidad = cantidad;
@@ -16,7 +16,7 @@ public class Pedido {
         this.total=total;
     }
 
-        public Pedido() {
+        public FabricaPedido() {
     }
 
     public void setPrecio1(String precio1) {
@@ -70,6 +70,9 @@ public class Pedido {
     public String toString() {
         return "Pedido{" + "numeroPedido=" + numeroPedido + ", nombrePedido=" + nombrePedido + ", cantidad=" + cantidad + ", precio1=" + precio1 + ", total=" + total + '}';
     }
+    
+    public abstract float calcularPrecio(float precioProducto);
+    
 
    
 }
